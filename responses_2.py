@@ -1,6 +1,6 @@
 import re
 from datetime import datetime, timedelta
-from validations import Date, Report, Bike
+from validations import Date, Report, Bike, cancel
 
 
 start_msg = """Choose your option:
@@ -43,6 +43,7 @@ def default_responses(input_user):
             to_validate = input_user.split(" ")[-1]
             reg_date = in_date.correct_date_format(to_validate)
             if in_date.check_date_existance(reg_date):
+                cancel()
                 return f'Error!! There is already a record with this date {reg_date}'
             else:
                 return in_date.set_hour(reg_time)
@@ -111,10 +112,8 @@ def default_responses(input_user):
         return 'Enter the date for deleting:'
 
     if input_user in ['cancel', 'no']:
-        Date.start_hour = False
-        Date.end_hour = False
-        Date.start_register = False
         bike_flag, delete_flag, report_flag = False, False, False
+        cancel()
         return 'Operation cancelled!!'
 
     if input_user == 'd':

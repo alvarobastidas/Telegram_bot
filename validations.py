@@ -53,8 +53,7 @@ class Date:
             msg = f"""!!Record entered successfully!!\n\n{Date.register}\n\nDo you want to save this record ? (yes/no)"""
             return msg
         else:
-            Date.start_register = False
-            Date.start_hour, Date.end_hour = False, False
+            cancel()
             return 'The init-time should be greater than end-time please start again'
 
     def manage_file_storage():
@@ -169,3 +168,10 @@ class Bike:
 
     def show_roi(self):
         return f'Bike one_way: {self.one_way}\nROI: £{self.roi}\nLast update: {self.last_update}'
+
+
+def cancel():
+    Date.start_hour = False
+    Date.end_hour = False
+    Date.start_register = False
+

@@ -36,3 +36,11 @@ Day: 16-Jun-2021 Start: 16:30 End: 00:30 Hours_number: 8.0
 Day: 17-Jun-2021 Start: 14:00 End: 00:30 Hours_number: 10.5
 Day: 18-Jun-2021 Start: 15:00 End: 22:30 Hours_number: 7.5
 Day: 19-Jun-2021 Start: 12:00 End: 00:00 Hours_number: 12.0
+Day: 23-Jun-2021 Start: 14:15 End: 00:15 Hours_number: 10.0
+Day: 24-Jun-2021 Start: 14:00 End: 01:00 Hours_number: 11.0
+Day: 25-Jun-2021 Start: 12:00 End: 00:30 Hours_number: 12.5
+Day: 26-Jun-2021 Start: 13:00 End: 23:15 Hours_number: 10.25
+Day: 30-Jun-2021 Start: 17:00 End: 01:15 Hours_number: 8.25
+Day: 01-Jul-2021 Start: 17:00 End: 01:00 Hours_number: 8.0
+Day: 02-Jul-2021 Start: 16:00 End: 00:15 Hours_number: 8.25
+Day: 03-Jul-2021 Start: 16:00 End: 23:20 Hours_number: 7.33
