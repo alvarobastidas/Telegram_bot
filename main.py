@@ -46,5 +46,5 @@ def test_bot():
         print(response)
 
 
-# main()
-test_bot()
+main()
+# test_bot()

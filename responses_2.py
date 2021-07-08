@@ -33,6 +33,7 @@ def default_responses(input_user):
 
     if input_user == 'a':
         msg = f"""Enter the start time and date:\n\n{message}\n"""
+        Date.start_register = True
         return msg
 
     if re.match(regex_date_time, input_user):
