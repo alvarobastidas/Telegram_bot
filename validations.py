@@ -21,10 +21,12 @@ class Date:
         else:
             return reg_time
 
-    def correct_date_format(self, to_validate):
-        date_list = to_validate.split("-")
-        date_list[1] = date_list[1].capitalize()
-        return "-".join(date_list)
+    def correct_date_format(self, to_validate):  # to_validate = 3-jul-2021
+        date_list = to_validate.split("-")  # = ['3', 'jul', '2021']
+        date_list[1] = date_list[1].capitalize()  # = 'Jul'
+        if len(date_list[0]) == 1:  # = '3'
+            date_list[0] = '0' + date_list[0]  # = '03'
+        return "-".join(date_list)  # = '03-Jul-2021'
 
     def check_date_existance(self, reg_date):
         self.months = Report().months
