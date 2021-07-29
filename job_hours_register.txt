@@ -48,3 +48,9 @@ Day: 03-Jul-2021 Start: 16:00 End: 23:20 Hours_number: 7.33
 Day: 07-Jul-2021 Start: 17:50 End: 23:40 Hours_number: 5.83
 Day: 09-Jul-2021 Start: 17:00 End: 00:50 Hours_number: 7.83
 Day: 10-Jul-2021 Start: 17:00 End: 00:40 Hours_number: 7.67
+Day: 11-Jul-2021 Start: 18:00 End: 23:50 Hours_number: 5.83
+Day: 14-Jul-2021 Start: 13:00 End: 00:15 Hours_number: 11.25
+Day: 15-Jul-2021 Start: 17:00 End: 00:00 Hours_number: 7.0
+Day: 23-Jul-2021 Start: 17:00 End: 23:45 Hours_number: 6.75
+Day: 24-Jul-2021 Start: 17:00 End: 01:25 Hours_number: 8.42
+Day: 28-Jul-2021 Start: 18:00 End: 00:00 Hours_number: 6.0

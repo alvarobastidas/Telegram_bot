@@ -1,6 +1,6 @@
 import re
 from datetime import datetime, timedelta
-from validations import Date, Report, Bike, cancel
+from validations import Date, Report, Bike, cancel, fibo
 
 
 start_msg = """Choose your option:
@@ -8,6 +8,8 @@ a) Register a day and worked hours
 b) Review your hours and days worked
 c) Delete a existent record
 d) Bicycle ROI
+e) Not defined
+f) Number Generator
 """
 
 message = """Time and Day format: 
@@ -23,7 +25,7 @@ delete_date = ""
 
 
 def default_responses(input_user):
-    global message, delete_flag, bike_flag, report_flag, delete_date
+    global message, delete_flag, bike_flag, report_flag, delete_date, fibo_flag
 
     if input_user in ('hello', 'hi'):
         return "Hi it's a Wage_Bot to help you job hour registration"
@@ -123,7 +125,16 @@ def default_responses(input_user):
 
     if input_user.isdigit():
         number = int(input_user)
-        bike_flag = False
-        return Bike().add_trip(number)
+        if bike_flag:
+            bike_flag = False
+            return Bike().add_trip(number)
+
+        if fibo_flag:
+            fibo_flag = False
+            return fibo(number)
+
+    if input_user == 'f':
+        fibo_flag = True
+        return 'Enter the integer number: '
 
     return 'Sorry I do not recognise your input'
