@@ -1,17 +1,27 @@
-import re
 from datetime import datetime, timedelta
+import mysql.connector
+
+
+def execute_sql_command(command, operation="read"):
+    conn = mysql.connector.connect(host="localhost", user="root", database="Alvaro_DB")
+    cursor = conn.cursor()
+    cursor.execute(command)
+    if operation in ('insert', 'delete'):
+        conn.commit()
+    records = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return records
 
 
 class Date:
     start_hour = False  # datetime.now()
     end_hour = False  # datetime.now()
     start_register = True
-    register = ""
+    register = 0
 
     def __init__(self, date):
         self.date = date
-        self.months = []
-        self.database = []
 
     def check_date(self, date_format):
         try:
@@ -21,19 +31,9 @@ class Date:
         else:
             return reg_time
 
-    def correct_date_format(self, to_validate):  # to_validate = 3-jul-2021
-        date_list = to_validate.split("-")  # = ['3', 'jul', '2021']
-        date_list[1] = date_list[1].capitalize()  # = 'Jul'
-        if len(date_list[0]) == 1:  # = '3'
-            date_list[0] = '0' + date_list[0]  # = '03'
-        return "-".join(date_list)  # = '03-Jul-2021'
-
     def check_date_existance(self, reg_date):
-        self.months = Report().months
-        if reg_date in self.months:
-            return True
-        else:
-            return False
+        sql_command = f"SELECT * FROM Job_Hour_Register WHERE Date = '{reg_date}'"
+        return execute_sql_command(sql_command)
 
     def set_hour(self, reg_time):
         if Date.start_register and not Date.start_hour and not Date.end_hour:
@@ -51,28 +51,26 @@ class Date:
         job_time = Date.end_hour - Date.start_hour
         if job_time > timedelta(0):
             hours_number = round(job_time.seconds / 3600, 2)
-            Date.register = f"Day: {Date.start_hour.strftime('%d-%b-%Y')} Start: {Date.start_hour.strftime('%H:%M')} End: {Date.end_hour.strftime('%H:%M')} Hours_number: {hours_number}\n"
-            msg = f"""!!Record entered successfully!!\n\n{Date.register}\n\nDo you want to save this record ? (yes/no)"""
+            Date.register = hours_number
+            register = f"Day: {Date.start_hour.strftime('%d-%b-%Y')} Start: {Date.start_hour.strftime('%H:%M')} End: {Date.end_hour.strftime('%H:%M')} Hours_number: {hours_number}\n"
+            msg = f"""!!Record entered successfully!!\n\n{register}\n\nDo you want to save this record ? (yes/no)"""
             return msg
         else:
             cancel()
             return 'The init-time should be greater than end-time please start again'
 
     def manage_file_storage():
-        with open('job_hours_register.txt', 'a') as file:
-            file.write(Date.register)
+        a = Date.start_hour.strftime('%Y-%m-%d')
+        b = Date.start_hour.strftime('%H:%M')
+        c = Date.end_hour.strftime('%H:%M')
+        sql_command = f"INSERT INTO Job_Hour_Register VALUES ('{a}', '{b}', '{c}', {Date.register});"
+        execute_sql_command(sql_command, 'insert')
 
 
 class Report:
     names_months = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 8: 'August',
                     9: 'September', 10: 'October', 11: 'November', 12: 'December', }
     wage_hour = 9.5
-
-    def __init__(self):
-        with open('job_hours_register.txt', 'r') as file:
-            self.database = file.readlines()
-        pattern = '[0-9]+[-][a-z,A-Z]+[-][0-9]+'
-        self.months = [re.findall(pattern, line)[0] for line in self.database]
 
     def validate_month(self, input_user):
         month_name = input_user[0:3]
@@ -83,50 +81,32 @@ class Report:
         else:
             return self.review_month_info(month_number)
 
-    def review_month_info(self, month_number): # check month existance
-        for item in self.months:
-            stored_month = datetime.strptime(item, '%d-%b-%Y').month
-            if month_number == stored_month:
-                return self. get_month_info(month_number)
+    def review_month_info(self, month_number):  # check month existance
+        sql_command = f"SELECT * FROM Job_Hour_Register WHERE MONTH(Date) = {month_number}"
+        month_data = execute_sql_command(sql_command)
+        info = ""
+        total_month_hour = 0
+        if month_data:
+            for item in month_data:
+                info += f"Date:{item[0].strftime('%d-%b-%Y')}, Start:{item[1]}, End:{item[2]}, Hours:{item[3]}\n"
+                total_month_hour += item[-1]
         else:
             msg = f'Sorry I do not have information about {Report.names_months[month_number]}'
             return msg
-
-    def get_month_info(self, month_number):
-        pattern = '[0-9]+[-][a-z,A-Z]+[-][0-9]+'
-        info = ""
-        total_month_hour = 0
-        for item in self.database:
-            month_name = re.findall(pattern, item)[0]
-            if month_number == datetime.strptime(month_name, '%d-%b-%Y').month:
-                info += item
-                item_hour_str = item.strip('\n')
-                total_month_hour += float(item_hour_str.split(" ")[-1])
 
         total_hour = round(total_month_hour, 2)
         total_wages = round(total_month_hour * Report.wage_hour, 2)
         return f'{info}\nSummary\nMonth: {self.names_months[month_number]}\nTotal Hours : {total_hour}\nTotal Wages: {total_wages}£'
 
-    def get_day_info(self, day_number, month_number):
-        pattern = '[0-9]+[-][a-z,A-Z]+[-][0-9]+'
-        info = ""
-        total_day_hour = 0
-        for item in self.database:
-            date_str = re.findall(pattern, item)[0]
-            if day_number == datetime.strptime(date_str, '%d-%b-%Y').day and month_number == datetime.strptime(
-                    date_str, '%d-%b-%Y').month:
-                info += item
-                item_hour_str = item.strip('\n')
-                total_day_hour += float(item_hour_str.split(" ")[-1])
-
+    def get_day_info(self, day_data):
+        info = f"Date:{day_data[0][0].strftime('%d-%b-%Y')}, Start:{day_data[0][1]}, End:{day_data[0][2]}, Hours:{day_data[0][3]}"
+        total_day_hour = day_data[0][3]
         total_wages = round(total_day_hour * Report.wage_hour, 2)
         return f'{info}\nTotal Wages: {total_wages}£\n\nAre you sure delete this date (yes/no): '
 
-    def delete_record(self, date):
-        new_database = [item for item in self.database if item.find(date) == -1]
-        with open('job_hours_register.txt', 'w') as file:
-            for item in new_database:
-                file.write(item)
+    def delete_record(self, day):
+        sql_command = f"DELETE FROM Job_Hour_Register WHERE Date = '{day}'"
+        execute_sql_command(sql_command, 'delete')
 
 
 class Bike:
@@ -185,4 +165,8 @@ def fibo(n):
         return fibo(n-2) + fibo(n-1)
 
     return ValueError
+
+
+
+
 

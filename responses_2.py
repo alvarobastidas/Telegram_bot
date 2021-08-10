@@ -43,11 +43,10 @@ def default_responses(input_user):
         date_format = '%H:%M %d-%b-%Y'
         reg_time = in_date.check_date(date_format)
         if reg_time:
-            to_validate = input_user.split(" ")[-1]
-            reg_date = in_date.correct_date_format(to_validate)
+            reg_date = reg_time.strftime('%Y-%m-%d')
             if in_date.check_date_existance(reg_date):
                 cancel()
-                return f'Error!! There is already a record with this date {reg_date}'
+                return f'Error!! There is already a record with this date {to_validate}'
             else:
                 return in_date.set_hour(reg_time)
         else:
@@ -58,14 +57,13 @@ def default_responses(input_user):
         del_date = Date(input_user)
         date_format = '%d-%b-%Y'
         reg_time = del_date.check_date(date_format)
+        delete_date = reg_time
         if reg_time:
-            day_number = reg_time.day
-            month_number = reg_time.month
-            reg_date = del_date.correct_date_format(input_user)
-            if del_date.check_date_existance(reg_date):
+            reg_date = reg_time.strftime('%Y-%m-%d')
+            day_info = del_date.check_date_existance(reg_date)
+            if day_info:
                 delete_flag = True
-                delete_date = reg_date
-                return Report().get_day_info(day_number, month_number)
+                return Report().get_day_info(day_info)
             else:
                 return f'The date: {reg_date} not exist in the database!!'
         else:
@@ -75,7 +73,7 @@ def default_responses(input_user):
     if input_user == 'yes':
         if delete_flag:
             delete_flag = False
-            Report().delete_record(delete_date)
+            Report().delete_record(delete_date.strftime('%Y-%m-%d'))
             return 'Record deleted!!'
 
         if Date.start_register:
@@ -87,7 +85,7 @@ def default_responses(input_user):
 
     if input_user == 'b':
         report_flag = True
-        msg = 'x). View current month\ny). Select a month\n\nEnter your option:'
+        msg = 'x). View current month\ny). Select a month\nz). Enter a range:\n\nEnter your option:'
         return msg
 
     if input_user == 'x':
